@@ -5,6 +5,7 @@ import connectDB from './db/db.js';
 import adminRouter from './route/admin.routes.js';
 import userRouter from './route/user.route.js';
 import cookieParser from 'cookie-parser';
+import bookRoute from './route/book.route.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.get('/', (req, res) =>(
 // making the routes
 app.use("/api/admin" ,adminRouter)
 app.use("/api/user" ,userRouter)
+app.use("/api/book" ,bookRoute)
 
 const port  =  process.env.PORT || 4000
 app.listen(port , () =>{

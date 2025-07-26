@@ -1,6 +1,7 @@
 import { User } from "../model/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { Book } from "../model/book.model.js";
 
 export const register = async (req, res) => {
   try {
@@ -170,38 +171,94 @@ export const tekeAdmission = async(req, res) =>{
   }
 }
 
+export const barrowBook = async(req, res) =>{
+    try {
 
-// export const updateFees = async(req, res) =>{
-//    try {
+      const user =  await User.findById(req.user._id)
+      const book = await Book.findById(req.params.bookId)
 
-//     const user =  await User.findById(req.user._id);
-//     if(!user){
-//       res.status(404).json({
-//         success: false ,
-//         message : "User Not Found "
-//       })
-//     }
+      if(book.availableCopies <= 0){
+        return res.status(400).json({
+           success :  false ,
+           message : "Book is Not avalable "
+        })
+      }
 
-//     if(!user.addmissionTaken){
-//       res.status(401).json({
-//         success : false ,
-//         message : "Take the admission Firstly !"
-//       })
-//     }
+      book.availableCopies -=1;
+      book.save();
 
-//     user.feePaid = true ;
-//     await user.save();
+      user.borrowedBooks.push({book : book._id});
+      user.save();
 
-//     return res.status(201).json({
-//        success : true ,
-//        message : "Fee Updated Successfully ! "
-//     })
+      return res.status(200).json({
+        success : true ,
+        user,
+        message :  "book is barrowed Successfully ! "
+      })
+      
+    } catch (error) {
+      return res.status(500).json({
+      success: false,
+      message: "Barrow Book Failed  ! ",
+      error: error.message,
+    });
+    }
+  }
+
+export const returnBook = async (req, res) =>{
+  
+  try {
+
+    const user =  await User.findById(req.user._id).populate("borrowedBooks.book");
+    const bookId = req.params.bookId;
+
+    const borrowRecord = user.borrowedBooks.find((b) => b.book._id.toString() === bookId && !b.returned);
+
+    if(!borrowRecord) {
+      return res.status(400).json({
+        success : false,
+        message :  "No Barrwed Record Found"
+      })
+    }
+
+    borrowRecord.returned = true;
+    await user.save();
+
+    const book =  await Book.findById(bookId)
+    book.availableCopies += 1;
+    book.save();
+
+    return res.status(200).json({
+      success : true,
+      user,
+      message : "Book Return Successfully ! "
+    })
+
+  } catch (error) {
+     return res.status(500).json({
+      success: false,
+      message: "Return Book Failed  ! ",
+      error: error.message,
+    });
+  }
+}
+
+export const myBooks = async(req, res) =>{
+   try {
+
+    const user =  await User.findById(req.user._id).populate("borrowedBooks.book")
+
+    return res.status(200).json({
+      success :  true,
+      message : "All Borrowed Books",
+      books : user.borrowedBooks
+    })
     
-//    } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: "Fee Upating Failed  ! ",
-//       error: error.message,
-//     });
-//    }
-// }
+   } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in the Getting of the Book  ! ",
+      error: error.message,
+    });
+   }
+}

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User } from "../model/user.model.js";
+import { Book } from "../model/book.model.js";
 
 export const adminLogin = (req, res) => {
   try {
@@ -100,33 +101,65 @@ export const getAllAdmissions = async (req, res) => {
   }
 };
 
-export const updateFees = async(req, res) =>{
-   try {
+export const updateFees = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { feePaid } = req.body;
 
-    const {id} = req.params;
-    const {feePaid} = req.body;
-
-    const user =  await User.findById(id);
-    if(!user){
+    const user = await User.findById(id);
+    if (!user) {
       return res.status(404).json({
-        success : false ,
-        message : "User not found"
-      })
+        success: false,
+        message: "User not found",
+      });
     }
 
     user.feePaid = feePaid;
     await user.save();
 
     return res.status(201).json({
-      success : true ,
-      message : `Fee status updated for ${user.name}`
-    })
-    
-   } catch (error) {
-     res.status(500).json({
-       success: false,
-       message: "Fee Upating Failed  ! ",
-       error: error.message,
-     })
-   }
-}
+      success: true,
+      message: `Fee status updated for ${user.name}`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Fee Upating Failed  ! ",
+      error: error.message,
+    });
+  }
+};
+
+export const addBook = async (req, res) => {
+  try {
+    const { title, author, availableCopies, description, totalCopies } = req.body;
+
+    if (!title || !author) {
+      return res.status(400).json({
+        success: false,
+        message: "Title and the author are required ",
+      });
+    }
+
+    const book = await Book.create({
+      title,
+      author,
+      description,
+      totalCopies,
+      availableCopies
+    });
+
+    return res.status(201).json({
+      success: true,
+      book,
+      message: "Book Added Successfully ! ",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while Adding the Book",
+    });
+  }
+};
+ 

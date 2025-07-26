@@ -31,6 +31,23 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    borrowedBooks :[
+      {
+         book : {
+          type: mongoose.Schema.Types.ObjectId,
+          ref : "Book"
+        },
+        barrowedAt :{
+           type : Date,
+           default : Date.now()
+        },
+        returned : {
+             type : Boolean,
+             default : false
+        }
+      }
+
+    ]
   },
   { timestamps: true }
 );
