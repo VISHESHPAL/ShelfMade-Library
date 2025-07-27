@@ -18,11 +18,11 @@ const Navbar = () => {
     <nav className="flex items-center justify-between px-6 md:px-16 py-4 border-b border-gray-300 bg-white relative">
       {/* Logo */}
       <NavLink to="/" onClick={() => setOpen(false)}>
-          <h1>Shelf Made </h1>
+          <h1 className=" text-2xl font-bold">Shelf Made </h1>
       </NavLink>
 
       {/* Desktop Navigation */}
-      <div className="hidden sm:flex items-center gap-8 text-sm">
+      <div className="hidden sm:flex  items-center gap-8 text-sm">
         <NavLink to="/">Home</NavLink>
         {user && <NavLink to="/profile">Profile</NavLink>}
         <NavLink to="/admission">Take Admission</NavLink>
@@ -65,34 +65,35 @@ const Navbar = () => {
 
       {/* Mobile Dropdown */}
       {open && (
-        <div className="absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col gap-2 px-6 text-sm sm:hidden flex">
-          <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
-          {user && <NavLink to="/profile" onClick={() => setOpen(false)}>Profile</NavLink>}
-          <NavLink to="/admission" onClick={() => setOpen(false)}>Take Admission</NavLink>
-          {user && <NavLink to="/borrowed" onClick={() => setOpen(false)}>Books Borrowed</NavLink>}
-          {!user ? (
-            <button
-              onClick={() => {
-                setShowUserLogin(true);
-                setOpen(false);
-              }}
-              className="mt-2 bg-[#F7F8F3]  text-black w-20 py-1.5 rounded-full"
-            >
-              Login
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                logout();
-                setOpen(false);
-              }}
-              className="mt-2 bg-[#F7F8F3]  text-black w-20 py-1.5 rounded-full"
-            >
-              Logout
-            </button>
-          )}
-        </div>
-      )}
+  <div className="absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col gap-2 px-6 text-sm sm:hidden flex z-50">
+    <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
+    {user && <NavLink to="/profile" onClick={() => setOpen(false)}>Profile</NavLink>}
+    <NavLink to="/admission" onClick={() => setOpen(false)}>Take Admission</NavLink>
+    {user && <NavLink to="/borrowed" onClick={() => setOpen(false)}>Books Borrowed</NavLink>}
+    {!user ? (
+      <button
+        onClick={() => {
+          setShowUserLogin(true);
+          setOpen(false);
+        }}
+        className="mt-2 bg-[#F7F8F3] text-black w-20 py-1.5 rounded-full"
+      >
+        Login
+      </button>
+    ) : (
+      <button
+        onClick={() => {
+          logout();
+          setOpen(false);
+        }}
+        className="mt-2 bg-[#F7F8F3] text-black w-20 py-1.5 rounded-full"
+      >
+        Logout
+      </button>
+    )}
+  </div>
+)}
+
     </nav>
   );
 };
