@@ -24,6 +24,8 @@ const handleAdmissionClick = () => {
   setOpen(false); 
 };
 
+
+
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 py-4 border-b border-gray-300 bg-white relative">
       {/* Logo */}

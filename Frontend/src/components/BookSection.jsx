@@ -71,7 +71,7 @@ const AvailableBooks = () => {
   };
 
   return (
-    <section className="bg-[#f7f9f4] px-6 md:px-20 py-16">
+    <section className="bg-[#f7f9f4] px-6 md:px-20 py-16" id="books">
       <h2 className="text-3xl font-extrabold text-center text-[#3e3e3e] mb-12">
         📚 Available Books
       </h2>

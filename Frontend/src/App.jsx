@@ -7,6 +7,7 @@ import Home from "./pages/users/Home";
 import Profile from "./pages/users/Profile";
 import Admission from "./pages/users/Admission";
 import BorrowedBooks from "./pages/users/BorrowedBooks";
+import Login from "./pages/users/Login";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admission" element={<Admission />} />
                 <Route path="/borrowed" element={<BorrowedBooks />} />
+                <Route path="/login" element={<Login />} />
 
       </Routes>
 

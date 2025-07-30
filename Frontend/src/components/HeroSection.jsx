@@ -13,9 +13,11 @@
             Dive into the world of books and unlock endless possibilities. Every page you turn builds the story of your success.
             </p>
 
-            <button className="mt-8 bg-[#bdc1b0] text-white px-6 py-3 rounded-full text-lg font-medium hover:bg-[#a8ae95] transition-all duration-300">
+            <a href="#books">
+                <button className="mt-8 bg-[#bdc1b0] text-white px-6 py-3 rounded-full text-lg font-medium hover:bg-[#a8ae95] transition-all duration-300" >
             Explore Books
             </button>
+            </a>
         </div>
 
         {/* Right Illustration */}
