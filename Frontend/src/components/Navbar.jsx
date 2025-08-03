@@ -13,18 +13,16 @@ const Navbar = () => {
     setUser(null);
     navigate("/");
   };
-const handleAdmissionClick = () => {
-  if (!user) {
-    toast.error("Please login to take admission");
-    navigate("/login");
-  } else {
-    navigate("/admission");
-  }
+  const handleAdmissionClick = () => {
+    if (!user) {
+      toast.error("Please login to take admission");
+      navigate("/login");
+    } else {
+      navigate("/admission");
+    }
 
-  setOpen(false); 
-};
-
-
+    setOpen(false);
+  };
 
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 py-4 border-b border-gray-300 bg-white relative">
@@ -47,7 +45,10 @@ const handleAdmissionClick = () => {
 
         {!user ? (
           <button
-            onClick={() => setShowUserLogin(true)}
+            onClick={() => {
+              navigate("/login");
+              setOpen(false);
+            }}
             className="px-8 py-3 bg-[#F7F8F3] text-black rounded-full transition"
           >
             Login
@@ -123,10 +124,10 @@ const handleAdmissionClick = () => {
           {!user ? (
             <button
               onClick={() => {
-                setShowUserLogin(true);
+                navigate("/login");
                 setOpen(false);
               }}
-              className="mt-2 bg-[#F7F8F3] text-black w-20 py-1.5 rounded-full"
+              className="px-8 py-3 w-[100px] bg-[#F7F8F3] text-black rounded-full transition"
             >
               Login
             </button>

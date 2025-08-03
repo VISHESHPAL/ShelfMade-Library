@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(true);
+  const [user, setUser] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
   const [showUserLogin, setShowUserLogin] = useState(false);
 
