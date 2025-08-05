@@ -10,7 +10,7 @@ userRouter.get("/logout" , logout);
 userRouter.get("/is-auth" ,isAuthenticated, isAuth);
 userRouter.get("/profile" ,isAuthenticated, getProfile);
 userRouter.post("/admission" ,isAuthenticated, tekeAdmission);
-userRouter.post("/barrow/:bookId" , isAuthenticated , barrowBook)
+userRouter.post("/borrow/:bookId" , isAuthenticated, barrowBook)
 userRouter.post("/return/:bookId" , isAuthenticated , returnBook)
 userRouter.get("/my-books" , isAuthenticated , myBooks)
 

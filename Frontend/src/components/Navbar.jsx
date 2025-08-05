@@ -4,15 +4,28 @@ import { toast } from "react-toastify";
 import { useAuthContext } from "../context/AuthContext";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { CgProfile } from "react-icons/cg";
+import axios from 'axios'
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { user, setUser, navigate, setShowUserLogin } = useAuthContext();
 
-  const logout = () => {
-    setUser(null);
-    navigate("/");
+  const logout = async () => {
+    try {
+
+      await axios.get("http://localhost:5000/api/user/logout", {
+        withCredentials: true, 
+      });
+
+      setUser(null);
+      toast.success("Logout successful");
+      navigate("/");
+    } catch (error) {
+      const message = error.response?.data?.message || "Logout failed";
+      toast.error(message);
+    }
   };
+
   const handleAdmissionClick = () => {
     if (!user) {
       toast.error("Please login to take admission");

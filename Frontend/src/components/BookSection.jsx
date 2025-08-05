@@ -1,125 +1,103 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { toast } from "react-toastify";
-import { useAuthContext } from "../context/AuthContext";
-
-const dummyBooks = [
-  {
-    id: 1,
-    title: "The Alchemist",
-    author: "Paulo Coelho",
-    totalCopies: 10,
-    availableCopies: 4,
-    description: "A philosophical story about a shepherd’s journey to discover his destiny.",
-  },
-  {
-    id: 2,
-    title: "1984",
-    author: "George Orwell",
-    totalCopies: 7,
-    availableCopies: 2,
-    description: "A dystopian novel about totalitarianism and surveillance.",
-  },
-  {
-    id: 3,
-    title: "Wings of Fire",
-    author: "A.P.J Abdul Kalam",
-    totalCopies: 12,
-    availableCopies: 7,
-    description: "An inspiring autobiography of India’s Missile Man and President.",
-  },
-  {
-    id: 4,
-    title: "Harry Potter",
-    author: "J.K. Rowling",
-    totalCopies: 15,
-    availableCopies: 9,
-    description: "A magical story of a young wizard and his adventures.",
-  },
-  {
-    id: 5,
-    title: "Rich Dad Poor Dad",
-    author: "Robert Kiyosaki",
-    totalCopies: 10,
-    availableCopies: 5,
-    description: "A financial education book about building wealth.",
-  },
-];
 
 const AvailableBooks = () => {
-  const [expandedBookId, setExpandedBookId] = useState(null);
-  const [showAll, setShowAll] = useState(false);
-  const navigate = useNavigate();
-  const {user} = useAuthContext();
+  const [books, setBooks] = useState([]);
+  const [expanded, setExpanded] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const booksToDisplay = showAll ? dummyBooks : dummyBooks.slice(0, 4);
-
-  const toggleDescription = (id) => {
-    setExpandedBookId(expandedBookId === id ? null : id);
-  };
-
-  const handleBorrow = (bookId) => {
-
-    if (user) {
-      // 👇 Borrow logic can be added here (e.g., API call)
-      toast.success(`📚 Book with ID ${bookId} has been borrowed successfully!`);
-    } else {
-      // 🔒 Not logged in — redirect to login
-      toast.error("🔐 Please login to borrow books!");
-      navigate("/login");
+  const fetchBooks = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/book/all", {
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        setBooks(res.data.book);
+        setLoading(false);
+      } else {
+        toast.error("Failed to fetch books.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
+  const handleExpand = (id) => {
+    setExpanded((prev) => (prev === id ? null : id));
+  };
+
+  const handleBorrow = async (bookId) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/user/borrow",
+        { bookId },
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message || "Book borrowed successfully!");
+        fetchBooks(); // Refresh book data
+      } else {
+        toast.error(res.data.message || "Borrow failed.");
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(
+        error.response?.data?.message || "Something went wrong during borrowing."
+      );
+    }
+  };
+
+  if (loading) return <p className="text-center mt-8 text-lg">Loading books...</p>;
+
   return (
-    <section className="bg-[#f7f9f4] px-6 md:px-20 py-16" id="books">
-      <h2 className="text-3xl font-extrabold text-center text-[#3e3e3e] mb-12">
+    <section className="bg-[#f8f9fa] min-h-screen py-12 px-6 md:px-20">
+      <h2 className="text-3xl font-bold text-center text-gray-800 mb-10">
         📚 Available Books
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        {booksToDisplay.map((book) => (
-          <div
-            key={book.id}
-            className="bg-white p-6 rounded-xl shadow-md border border-[#e0e3d9]"
-          >
-            <h3 className="text-xl font-bold text-[#3e3e3e] mb-2">{book.title}</h3>
-            <p className="text-[#5b5b5b] font-medium mb-1">👤 Author: {book.author}</p>
-            <p className="text-[#5b5b5b] font-medium mb-1">📦 Total Copies: {book.totalCopies}</p>
-            <p className="text-[#5b5b5b] font-medium mb-3">✅ Available: {book.availableCopies}</p>
 
-            {expandedBookId === book.id && (
-              <p className="text-sm text-[#4b4b4b] mb-3">{book.description}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {books.map((book) => (
+          <div
+            key={book._id}
+            className="bg-white border border-gray-200 shadow-lg rounded-xl p-6 transition hover:shadow-xl"
+          >
+            <h3 className="text-xl font-semibold text-gray-800">{book.title}</h3>
+            <p className="text-gray-600 mt-1">👤 {book.author}</p>
+            <p className="text-gray-600 mt-1">📦 Total Copies: {book.totalCopies}</p>
+            <p className="text-gray-600 mt-1">✅ Available: {book.availableCopies}</p>
+
+            {expanded === book._id && (
+              <p className="text-sm text-gray-700 mt-4">{book.description}</p>
             )}
 
-            <div className="flex gap-3 flex-wrap">
+            <div className="mt-4 flex gap-3">
               <button
-                onClick={() => toggleDescription(book.id)}
-                className="text-sm bg-[#bdc1b0] hover:bg-[#a8ae95] text-white px-4 py-2 rounded-full transition duration-300"
+                onClick={() => handleExpand(book._id)}
+                className="bg-gray-700 text-white px-4 py-2 text-sm rounded hover:bg-gray-900"
               >
-                {expandedBookId === book.id ? "Hide Details" : "View Details"}
+                {expanded === book._id ? "Hide Details" : "View Details"}
               </button>
-
               <button
-                onClick={() => handleBorrow(book.id)}
-                className="text-sm bg-[#3e3e3e] hover:bg-[#2f2f2f] text-white px-4 py-2 rounded-full transition duration-300"
+                onClick={() => handleBorrow(book._id)}
+                disabled={book.availableCopies === 0}
+                className={`px-4 py-2 text-sm rounded text-white ${
+                  book.availableCopies === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
               >
-                Borrow
+                {book.availableCopies === 0 ? "Unavailable" : "Borrow"}
               </button>
             </div>
           </div>
         ))}
       </div>
-
-      {/* See More Button */}
-      {dummyBooks.length > 4 && (
-        <div className="flex justify-center mt-12">
-          <button
-            onClick={() => setShowAll((prev) => !prev)}
-            className="bg-[#3e3e3e] text-white hover:bg-[#2f2f2f] px-6 py-3 rounded-full text-sm font-medium transition duration-300"
-          >
-            {showAll ? "See Less" : "See More"}
-          </button>
-        </div>
-      )}
     </section>
   );
 };
