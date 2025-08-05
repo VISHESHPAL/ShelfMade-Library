@@ -12,7 +12,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
 import AddBook from "./pages/admin/AddBook";
 import AllUsers from "./pages/admin/AllUsers";
-import AllBooks from "./components/AllBooks";
+import AllBooks from "./pages/admin/AllBooks";
 
 function App() {
   const { isAdmin } = useAuthContext();

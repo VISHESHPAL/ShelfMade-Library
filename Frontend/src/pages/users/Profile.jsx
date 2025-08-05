@@ -7,7 +7,19 @@ const Profile = () => {
 
   const borrowedBooks = user?.borrowedBooks?.length || 0;
   const feePaid = user?.feePaid || false;
-  const admissionDate = user?.admissionDate?.slice(0, 10) || "N/A";
+  let formattedDate = "N/A";
+
+if (user?.addmissionDate) {
+  const dateObj = new Date(user.addmissionDate);
+  if (!isNaN(dateObj.getTime())) {
+    formattedDate = dateObj.toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+  }
+}
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#e6e9dc] py-10 px-4">
@@ -41,7 +53,7 @@ const Profile = () => {
 
           <div className="bg-white p-4 rounded-xl border border-[#d0d4c2] shadow-sm">
             <h2 className="text-lg font-semibold text-[#2c3e50] mb-2">Admission Date</h2>
-            <p className="text-md text-gray-700">{admissionDate}</p>
+            <p className="text-md text-gray-700">{formattedDate}</p>
           </div>
 
           <div className="bg-white p-4 rounded-xl border border-[#d0d4c2] shadow-sm">

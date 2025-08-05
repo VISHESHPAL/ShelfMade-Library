@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const AddBook = () => {
   const [book, setBook] = useState({
@@ -13,12 +14,31 @@ const AddBook = () => {
     setBook({ ...book, [e.target.name]: e.target.value });
   };
 
-  const handleAddBook = (e) => {
+  const handleAddBook = async (e) => {
     e.preventDefault();
 
-    // You can integrate backend call here
-    toast.success("📖 Book added successfully!");
-    setBook({ title: "", author: "", totalCopies: 1, description: "" });
+    try {
+      const payload = {
+        ...book,
+        availableCopies: book.totalCopies,
+      };
+
+      const response = await axios.post(
+        "/api/admin/add-book",
+        payload,
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        toast.success("📖 Book added successfully!");
+        setBook({ title: "", author: "", totalCopies: 1, description: "" });
+      } else {
+        toast.error(response.data.message || "Failed to add book.");
+      }
+    } catch (error) {
+      console.error("Error adding book:", error);
+      toast.error("Something went wrong while adding the book!");
+    }
   };
 
   return (

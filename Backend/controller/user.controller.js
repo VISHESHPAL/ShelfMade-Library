@@ -127,35 +127,37 @@ export const getProfile = async (req, res) => {
     });
   }
 };
-
-export const tekeAdmission = async (req, res) => {
+export const takeAdmission = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user) {
-      res.status(404).json({
-        success: false,
-        message: "User Not Found ",
-      });
-    }
-    if (user.addmissionTaken) {
-      return res.status(401).json({
-        success: false,
-        message: "Already Taked Admission",
-      });
-    }
-    (user.addmissionTaken = true), (user.addmissionDate = new Date());
 
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.addmissionTaken) {
+      return res.status(400).json({
+        success: false,
+        message: "Admission already taken",
+      });
+    }
+
+    user.addmissionTaken = true;
+    user.addmissionDate = new Date();
     await user.save();
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
-      user,
-      message: "Admission Taken Sucessfully ! ",
+      updatedUser: user, 
+      message: "🎉 Admission taken successfully!",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Admission Failed  ! ",
+      message: "❌ Admission failed!",
       error: error.message,
     });
   }
@@ -191,14 +193,12 @@ export const barrowBook = async (req, res) => {
     });
   }
 };
-
 export const returnBook = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate(
-      "borrowedBooks.book"
-    );
+    const user = await User.findById(req.user._id).populate("borrowedBooks.book");
     const bookId = req.params.bookId;
 
+    // Find the borrowed record
     const borrowRecord = user.borrowedBooks.find(
       (b) => b.book._id.toString() === bookId && !b.returned
     );
@@ -206,26 +206,32 @@ export const returnBook = async (req, res) => {
     if (!borrowRecord) {
       return res.status(400).json({
         success: false,
-        message: "No Barrwed Record Found",
+        message: "No Borrowed Record Found",
       });
     }
 
-    borrowRecord.returned = true;
+    // ❌ Remove the book from the borrowedBooks array
+    user.borrowedBooks = user.borrowedBooks.filter(
+      (b) => b.book._id.toString() !== bookId
+    );
+
     await user.save();
 
+    // ✅ Update the available copies
     const book = await Book.findById(bookId);
-    book.availableCopies += 1;
-    book.save();
+    if (book) {
+      book.availableCopies += 1;
+      await book.save();
+    }
 
     return res.status(200).json({
       success: true,
-      user,
-      message: "Book Return Successfully ! ",
+      message: "Book returned and removed from user successfully!",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Return Book Failed  ! ",
+      message: "Return Book Failed!",
       error: error.message,
     });
   }

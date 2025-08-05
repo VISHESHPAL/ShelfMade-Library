@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import axios from "axios";
+import { useAuthContext } from "../../context/AuthContext";
+import { toast } from "react-toastify"; // 👈 import toast
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { setIsAdmin, navigate } = useAuthContext();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Admin Login Data:', { email, password });
+
+    try {
+      const res = await axios.post(
+        "/api/admin/login",
+        { email, password },
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        setIsAdmin(true); 
+        toast.success("Login successful! "); 
+        navigate("/admin");
+      } else {
+        toast.error(res.data.message || "Invalid credentials."); 
+      }
+    } catch (err) {
+      console.error("Login Failed:", err.response?.data || err.message);
+      toast.error("Something went wrong during login. Please try again."); 
+    }
   };
 
   return (
@@ -43,7 +64,7 @@ const AdminLogin = () => {
           </div>
           <button
             type="submit"
-            className="w-full hover:bg-[#a8ae95] bg-[#bdc1b0] text-white py-2 rounded-md  transition duration-200"
+            className="w-full hover:bg-[#a8ae95] bg-[#bdc1b0] text-white py-2 rounded-md transition duration-200"
           >
             Login
           </button>

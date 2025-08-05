@@ -5,8 +5,7 @@ import { AuthContext } from "../../context/AuthContext";
 import axios from 'axios'
 
 const Login = () => {
-  const { setUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { setUser , navigate} = useContext(AuthContext);
 
   const [state, setState] = useState("login");
   const [name, setName] = useState("");
@@ -18,7 +17,7 @@ const handleAuth = async (e) => {
 
   try {
     if (state === "login") {
-      const { data } = await axios.post("http://localhost:5000/api/user/login", {
+      const { data } = await axios.post("/api/user/login", {
         email,
         password,
       });
@@ -33,15 +32,15 @@ const handleAuth = async (e) => {
         return;
       }
 
-      const { data } = await axios.post("http://localhost:5000/api/user/register", {
+      const { data } = await axios.post("/api/user/register", {
         name,
         email,
         password,
       });
 
       setUser(data.user);
+      navigate("/login");
       toast.success("Account created");
-      navigate("/");
     }
   } catch (error) {
     console.log(error)

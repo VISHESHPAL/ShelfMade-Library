@@ -4,10 +4,10 @@ export  const getAllBook = async(req, res) =>{
 
     try {
 
-        const book = await  Book.find();
+        const books = await  Book.find();
         return res.status(200).json({
             success : true,
-            book,
+            books,
             message : "Book Fetched Successlly !"
         })
         

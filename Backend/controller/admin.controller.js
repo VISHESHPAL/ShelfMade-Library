@@ -20,12 +20,12 @@ export const adminLogin = (req, res) => {
         expiresIn: "7d",
       });
 
-      res.cookie("adminToken", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+    res.cookie("adminToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days (match JWT expiry)
+    });
 
       return res.status(200).json({
         success: true,
@@ -50,6 +50,7 @@ export const isAdminAuth = async (req, res) => {
   try {
     return res.json({
       success: true,
+      admin : req.admin
     });
   } catch (error) {
     console.log(error.message);

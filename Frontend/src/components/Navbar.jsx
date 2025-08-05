@@ -13,7 +13,7 @@ const Navbar = () => {
   const logout = async () => {
     try {
 
-      await axios.get("http://localhost:5000/api/user/logout", {
+      await axios.get("/api/user/logout", {
         withCredentials: true, 
       });
 

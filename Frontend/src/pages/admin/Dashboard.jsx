@@ -1,8 +1,31 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useAuthContext } from '../../context/AuthContext';
 
 const Dashboard = ({ children }) => {
   const location = useLocation();
+  const {navigate , setIsAdmin} = useAuthContext()
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.post('/api/admin/logout', {
+        withCredentials: true,
+      });
+
+      if (res.data.success) {
+        toast.success("Logout successful!");
+        setIsAdmin(false) 
+        navigate("/admin"); // adjust based on your route
+      } else {
+        toast.error("Logout failed!");
+      }
+    } catch (error) {
+      toast.error("Error logging out!");
+      console.error(error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-100 to-gray-200 flex">
@@ -39,6 +62,14 @@ const Dashboard = ({ children }) => {
             >
               📖 All Books
             </Link>
+          </li>
+          <li>
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left px-4 py-2 rounded hover:bg-red-100 text-red-600"
+            >
+              🚪 Logout
+            </button>
           </li>
         </ul>
       </div>

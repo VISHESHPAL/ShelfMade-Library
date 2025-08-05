@@ -9,11 +9,11 @@ const AvailableBooks = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/book/all", {
+      const res = await axios.get("/api/book/all", {
         withCredentials: true,
       });
       if (res.data.success) {
-        setBooks(res.data.book);
+        setBooks(res.data.books);
         setLoading(false);
       } else {
         toast.error("Failed to fetch books.");
@@ -33,15 +33,15 @@ const AvailableBooks = () => {
   };
 
   const handleBorrow = async (bookId) => {
+    // console.log(bookId);
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/user/borrow",
+      const res = await axios.post(`/api/user/borrow/${bookId}`,
         { bookId },
         { withCredentials: true }
       );
       if (res.data.success) {
         toast.success(res.data.message || "Book borrowed successfully!");
-        fetchBooks(); // Refresh book data
+        fetchBooks(); 
       } else {
         toast.error(res.data.message || "Borrow failed.");
       }

@@ -2,24 +2,54 @@ import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const Admission = () => {
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Step 1: If user is not logged in
     if (!user) {
       toast.error("⚠️ Please login to take admission!");
       navigate("/login");
+      return;
+    }
+
+    // Step 2: If already taken admission, go to profile
+    if (user.addmissionTaken) {
+      toast.info("✅ You’ve already taken admission!");
+      navigate("/profile");
     }
   }, [user, navigate]);
 
   if (!user) return null;
 
-  const handleAdmission = () => {
-    // API call to take admission goes here
-    toast.success("🎉 Admission successful!");
-    navigate("/profile");
+  const handleAdmission = async () => {
+    try {
+      const res = await axios.post(
+        "/api/user/admission",
+        {},
+        {
+          withCredentials: true, // ensures JWT cookie is sent
+        }
+      );
+
+      if (res.data?.success) {
+        toast.success("🎉 Admission successful!");
+
+        // Step 3: Update user context with latest data from backend
+        setUser(res.data.updatedUser); // Make sure backend returns updated user object
+
+        // Step 4: Navigate to profile page (context now updated, no reload needed)
+        navigate("/profile");
+      } else {
+        toast.error("❌ Admission failed. Try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("⚠️ Error during admission. Please try again.");
+    }
   };
 
   return (
