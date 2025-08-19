@@ -18,7 +18,6 @@ const Admission = () => {
 
     // Step 2: If already taken admission, go to profile
     if (user.addmissionTaken) {
-      toast.info("✅ You’ve already taken admission!");
       navigate("/profile");
     }
   }, [user, navigate]);
