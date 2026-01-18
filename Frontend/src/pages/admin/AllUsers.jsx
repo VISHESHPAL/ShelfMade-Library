@@ -11,7 +11,7 @@ const AllUsers = () => {
     const fetchUsers = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:5000/api/admin/admissions",
+          "/api/admin/admissions",
           {
             withCredentials: true,
           }
